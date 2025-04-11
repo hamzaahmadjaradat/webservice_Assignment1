@@ -1,0 +1,106 @@
+.container {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: linear-gradient(to bottom right, #fff3e0, #fce4ec);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #6a1b9a;
+}
+
+button {
+    padding: 0.8rem 1.6rem;
+    margin: 0.5rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #7e57c2, #ba68c8);
+    color: white;
+    box-shadow: 0 4px 15px rgba(123, 31, 162, 0.2);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+    transform: scale(1.05);
+}
+
+.quote-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.quote-card {
+    background: white;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease;
+    position: relative;
+    max-width: 700px;
+}
+
+.quote-card:hover {
+    transform: translateY(-5px);
+}
+
+.quote-body {
+    font-size: 1.25rem;
+    color: #444;
+    font-weight: 500;
+}
+
+.quote-author {
+    font-size: 1rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+.favorite-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: transparent;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.favorite-button:hover {
+    transform: scale(1.2);
+}
+
+.loading {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.error {
+    color: red;
+    margin-top: 1rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.pagination span {
+    font-weight: bold;
+    color: #5e35b1;
+}

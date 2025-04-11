@@ -1,0 +1,99 @@
+.favorites-container {
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #fceabb, #f8b500);
+    min-height: 100vh;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #4a148c;
+}
+
+h3 {
+    font-size: 1.8rem;
+    margin: 1.5rem 0 1rem;
+    color: #2e7d32;
+    border-bottom: 2px solid #2e7d32;
+    display: inline-block;
+}
+
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.favorite-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.favorite-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.favorite-card .text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 0.5rem;
+}
+
+.favorite-card .author {
+    font-size: 1rem;
+    color: #6a1b9a;
+    font-style: italic;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f44336;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.favorite-card:hover .delete-btn {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+.error {
+    color: #d50000;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}

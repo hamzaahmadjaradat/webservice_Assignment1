@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Login from './frontend/Login';
+import MainPage from './frontend/MainPage';
+import QuoteFetcherPage from './frontend/QuoteFetcherPage';
+import AdvicePage from './frontend/advicePage';
+import FavoritesPage from './frontend/FavoritesPage';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+export default function App() {
+    const [user, setUser] = useState(null);
+
+
+    return (
+        <Routes>
+            <Route path="/" element={!user ? <Login onLogin={setUser} /> : <MainPage user={user} />} />
+            <Route path="/quotes" element={<QuoteFetcherPage />} />
+            <Route path="/advice" element={<AdvicePage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+
+        </Routes>
+    );
 }
-
-export default App;
