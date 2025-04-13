@@ -111,7 +111,7 @@ API documentation :
 ## API Response Samples
 
 ### Random Advice
-```json
+json
 {
   "slip": {
     "id": 101,
