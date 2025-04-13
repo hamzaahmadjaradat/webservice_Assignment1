@@ -92,7 +92,7 @@ API Functions (`api.js`)
 
 ### 1. Clone the Repository
 
-``bash
+bash
 git clone https://github.com/hamzaahmadjaradat/webservice_Assignment1.git
 cd webservice_Assignment1
 
