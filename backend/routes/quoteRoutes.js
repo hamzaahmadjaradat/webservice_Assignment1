@@ -5,7 +5,7 @@ import {
     removeFavorite,
     getQuoteById
 
-} from '../controllers/favoritesController.js';
+} from '../controllers/quoteController.js';
 
 const router = express.Router();
 

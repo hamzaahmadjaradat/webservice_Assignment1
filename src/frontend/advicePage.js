@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { addFavoriteAdvice, getFavoriteAdvice, removeFavoriteAdvice } from '../api';
+import {
+    fetchRandomAdvice,
+    searchAdviceByTerm,
+    addFavoriteAdvice,
+    getFavoriteAdvice,
+    removeFavoriteAdvice
+} from '../api';
 import '../cssFiles/AdvicePage.css';
 
-const USER_ID = 1; // Replace with the logged-in user ID
-
-export default function AdvicePage() {
+export default function AdvicePage({ user }) {
     const [advice, setAdvice] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,25 +17,25 @@ export default function AdvicePage() {
     const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
+        if (!user) return;
+
         const loadFavorites = async () => {
             try {
-                const data = await getFavoriteAdvice(USER_ID);
+                const data = await getFavoriteAdvice(user.id);
                 setFavorites(data.map(a => a.advice_id));
             } catch (err) {
                 console.error('Failed to load favorite advice', err);
             }
         };
         loadFavorites();
-    }, []);
+    }, [user]);
 
     const fetchAdvice = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get('https://api.adviceslip.com/advice', {
-                headers: { 'Accept': 'application/json' }
-            });
-            setAdvice(response.data.slip);
+            const data = await fetchRandomAdvice();
+            setAdvice(data);
             setSearchResults([]);
         } catch (err) {
             console.error('Error fetching advice:', err);
@@ -48,9 +51,9 @@ export default function AdvicePage() {
         setError(null);
         setAdvice(null);
         try {
-            const response = await axios.get(`https://api.adviceslip.com/advice/search/${searchTerm}`);
-            if (response.data.slips) {
-                setSearchResults(response.data.slips);
+            const data = await searchAdviceByTerm(searchTerm);
+            if (data.slips) {
+                setSearchResults(data.slips);
             } else {
                 setSearchResults([]);
                 setError('No advice found for that search term.');
@@ -67,10 +70,10 @@ export default function AdvicePage() {
         const isFav = favorites.includes(advice.id);
         try {
             if (isFav) {
-                await removeFavoriteAdvice(USER_ID, advice.id);
+                await removeFavoriteAdvice(user.id, advice.id);
                 setFavorites(favorites.filter(id => id !== advice.id));
             } else {
-                await addFavoriteAdvice(USER_ID, advice);
+                await addFavoriteAdvice(user.id, advice);
                 setFavorites([...favorites, advice.id]);
             }
         } catch (error) {
@@ -82,6 +85,7 @@ export default function AdvicePage() {
     return (
         <div className="container">
             <h2>Need Some Advice?</h2>
+            <p style={{ fontSize: '0.9rem', color: '#888' }}>Logged in as: {user?.username} (ID: {user?.id})</p>
 
             <div style={{ marginBottom: '1rem' }}>
                 <button onClick={fetchAdvice} className="fetch-button">Get Random Advice</button>
@@ -116,7 +120,7 @@ export default function AdvicePage() {
                         <li key={item.id}>
                             "{item.advice}" <span style={{ color: '#888' }}>(ID: {item.id})</span>
                             <button onClick={() => toggleFavorite(item)} style={{ marginLeft: '0.5rem' }}>
-                                {favorites.includes(item.id) ? '💖' : '🤍'}
+                                {favorites.includes(item.id) ?  '💔 Unfavorite' : '🤍 Favorite'}
                             </button>
                         </li>
                     ))}

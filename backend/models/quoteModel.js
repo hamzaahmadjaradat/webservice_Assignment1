@@ -42,5 +42,5 @@ export const findQuoteById = async (id) => {
         'SELECT * FROM quotes WHERE id = ?',
         [id]
     );
-    return rows[0]; // make sure this is not undefined
+    return rows[0];
 };

@@ -1,51 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import '../cssFiles/FavoritesPage.css';
-import { getQuoteDetails, getAdviceDetails } from '../api';
+import {
+    getUserFavorites,
+    getFavoriteAdvice,
+    getQuoteDetails,
+    getAdviceDetails,
+    getFavoriteJokes,
+    removeFavoriteQuote,
+    removeFavoriteAdvice,
+    removeFavoriteJoke
+} from '../api';
 
-const USER_ID = 1;
-
-export default function FavoritesPage() {
-
+export default function FavoritesPage({ user }) {
     const [quotes, setQuotes] = useState([]);
     const [advice, setAdvice] = useState([]);
+    const [jokes, setJokes] = useState([]);
     const [error, setError] = useState(null);
 
-
     useEffect(() => {
+        if (!user) return;
+
         const fetchFavorites = async () => {
             try {
-                const [quoteRes, adviceRes] = await Promise.all([
-                    axios.get(`http://localhost:3000/api/users/${USER_ID}/favorites`),
-                    axios.get(`http://localhost:3000/api/users/${USER_ID}/favorite-advice`)
+                const [userQuotes, userAdvice, userJokes] = await Promise.all([
+                    getUserFavorites(user.id),
+                    getFavoriteAdvice(user.id),
+                    getFavoriteJokes(user.id)
                 ]);
 
-                // Fetch full quote details
                 const quoteDetails = await Promise.all(
-                    quoteRes.data.map(q => getQuoteDetails(q.quote_id))
+                    userQuotes.map(q => getQuoteDetails(q.quote_id))
                 );
                 setQuotes(quoteDetails);
 
-                // Fetch full advice details
                 const adviceDetails = await Promise.all(
-                    adviceRes.data.map(a => getAdviceDetails(a.advice_id))
+                    userAdvice.map(a => getAdviceDetails(a.advice_id))
                 );
                 setAdvice(adviceDetails);
 
-                console.log('Quotes:', quoteDetails);
-                console.log('Advice:', adviceDetails);
+                setJokes(userJokes);
             } catch (err) {
-                console.error('Error fetching favorites:', err);
                 setError('Failed to load favorites');
             }
         };
+
         fetchFavorites();
-    }, []);
+    }, [user]);
 
     const deleteQuote = async (quoteId) => {
         try {
-            await axios.delete(`http://localhost:3000/api/users/${USER_ID}/favorites/${quoteId}`);
-            setQuotes(quotes.filter(q => q.id !== quoteId));
+            await removeFavoriteQuote(user.id, quoteId);
+            setQuotes(prev => prev.filter(q => q.id !== quoteId));
         } catch (err) {
             console.error('Failed to delete quote:', err);
         }
@@ -53,16 +58,26 @@ export default function FavoritesPage() {
 
     const deleteAdvice = async (adviceId) => {
         try {
-            await axios.delete(`http://localhost:3000/api/users/${USER_ID}/favorite-advice/${adviceId}`);
-            setAdvice(advice.filter(a => a.id !== adviceId));
+            await removeFavoriteAdvice(user.id, adviceId);
+            setAdvice(prev => prev.filter(a => a.id !== adviceId));
         } catch (err) {
             console.error('Failed to delete advice:', err);
+        }
+    };
+
+    const deleteJoke = async (jokeId) => {
+        try {
+            await removeFavoriteJoke(user.id, jokeId);
+            setJokes(prev => prev.filter(j => j.joke_id !== jokeId));
+        } catch (err) {
+            console.error('Failed to delete joke:', err);
         }
     };
 
     return (
         <div className="favorites-container">
             <h2>My Favorites</h2>
+            <h4 style={{ color: '#555' }}>Logged in as: {user?.username} (ID: {user?.id})</h4>
             {error && <p className="error">{error}</p>}
 
             <section>
@@ -85,6 +100,18 @@ export default function FavoritesPage() {
                         <div className="favorite-card" key={item.id || `advice-${index}`}>
                             <p className="text">"{item.advice_text}"</p>
                             <button className="delete-btn" onClick={() => deleteAdvice(item.id)}>🗑️</button>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section>
+                <h3>🤣 Favorite Jokes</h3>
+                <div className="favorites-grid">
+                    {jokes.map((joke, index) => (
+                        <div className="favorite-card" key={joke.joke_id || `joke-${index}`}>
+                            <p className="text">"{joke.joke_text}"</p>
+                            <button className="delete-btn" onClick={() => deleteJoke(joke.joke_id)}>🗑️</button>
                         </div>
                     ))}
                 </div>

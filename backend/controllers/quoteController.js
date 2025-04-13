@@ -1,4 +1,4 @@
-import * as Favorites from '../models/favoritesModel.js';
+import * as Favorites from '../models/quoteModel.js';
 
 export const getFavorites = async (req, res) => {
     try {
@@ -39,7 +39,6 @@ export const getQuoteById = async (req, res) => {
         if (!quote) return res.status(404).json({ message: 'Quote not found' });
         res.json(quote);
     } catch (err) {
-        console.error('Quote error:', err);
         res.status(500).json({ message: 'Error retrieving quote' });
     }
 };

@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import '../cssFiles/Login.css';
+import { loginUser } from '../api';
 
 export default function Login({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            const response = await axios.post('http://localhost:3000/api/login', {
-                username,
-                password,
-            });
+            const response = await loginUser(username, password);
 
-            if (response.data.message) {
-                setError(response.data.message); // e.g., "User not found"
+            if (response.message) {
+                setError(response.message);
             } else {
-                onLogin(response.data); // expected { id, username }
+                onLogin(response);
             }
         } catch (err) {
             console.error('LOGIN ERROR:', err.response?.data || err.message);
@@ -47,6 +46,24 @@ export default function Login({ onLogin }) {
                 <button type="submit">Log In</button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
+
+            <p style={{ marginTop: '1rem' }}>
+                Don't have an account?{' '}
+                <button
+                    onClick={() => navigate('/signup')}
+                    style={{
+                        color: 'blue',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        padding: 0,
+                        font: 'inherit'
+                    }}
+                >
+                    Sign up here
+                </button>
+            </p>
         </div>
     );
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../cssFiles/QuoteFetcherPage.css';
-import { addFavoriteQuote, removeFavoriteQuote, getUserFavorites } from '../api';
+import {
+    addFavoriteQuote,
+    removeFavoriteQuote,
+    getUserFavorites,
+    fetchQuotesFromFavQs
+} from '../api';
 
-const USER_ID = 1;
-
-export default function QuoteFetcherPage() {
+export default function QuoteFetcherPage({ user }) {
     const [quotes, setQuotes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,35 +16,29 @@ export default function QuoteFetcherPage() {
     const [favoriteIds, setFavoriteIds] = useState([]);
 
     useEffect(() => {
+        if (!user) return;
+
         const loadFavorites = async () => {
             try {
-                const favs = await getUserFavorites(USER_ID);
+                const favs = await getUserFavorites(user.id);
                 setFavoriteIds(favs.map(fav => fav.quote_id));
             } catch (err) {
                 console.error('Failed to load favorites', err);
             }
         };
         loadFavorites();
-    }, []);
+    }, [user]);
 
     const fetchQuotes = async (pageNumber = 1) => {
         setLoading(true);
         setError(null);
         try {
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `https://favqs.com/api/quotes/?page=${pageNumber}`;
+            const data = await fetchQuotesFromFavQs(pageNumber);
 
-            const response = await axios.get(proxyUrl + apiUrl, {
-                headers: {
-                    'Authorization': 'Token token=ec16f3527892be13e370ae43ead86439',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.data.error_code) {
-                setError(response.data.message || 'Validation error');
+            if (data.error_code) {
+                setError(data.message || 'Validation error');
             } else {
-                const updatedQuotes = response.data.quotes.map(q => ({
+                const updatedQuotes = data.quotes.map(q => ({
                     ...q,
                     user_details: {
                         ...q.user_details,
@@ -50,8 +46,8 @@ export default function QuoteFetcherPage() {
                     }
                 }));
                 setQuotes(updatedQuotes);
-                setPage(response.data.page);
-                setLastPage(response.data.last_page);
+                setPage(data.page);
+                setLastPage(data.last_page);
             }
         } catch (err) {
             console.error(err);
@@ -64,9 +60,9 @@ export default function QuoteFetcherPage() {
     const toggleFavorite = async (quote) => {
         try {
             if (quote.user_details?.favorite) {
-                await removeFavoriteQuote(USER_ID, quote.id);
+                await removeFavoriteQuote(user.id, quote.id);
             } else {
-                await addFavoriteQuote(USER_ID, quote);
+                await addFavoriteQuote(user.id, quote);
             }
 
             setQuotes((prevQuotes) =>
@@ -77,7 +73,6 @@ export default function QuoteFetcherPage() {
                 )
             );
         } catch (error) {
-            console.error('Error updating favorite status:', error);
             setError('Unable to update favorite status.');
         }
     };
@@ -85,6 +80,8 @@ export default function QuoteFetcherPage() {
     return (
         <div className="container">
             <h1>Random Quotes</h1>
+            <h4 style={{ color: '#555' }}>Logged in as: {user?.username} (ID: {user?.id})</h4>
+
             <button onClick={() => fetchQuotes(1)}>Load Quotes</button>
 
             {loading && <p className="loading">Loading...</p>}
